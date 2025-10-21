@@ -9,6 +9,7 @@ type UseApiFetchOptions<TBody> = {
   default?: () => any;
   lazy?: boolean;
   immediate?: boolean;
+  key?: string;
 };
 
 export function useApiFetch<TResponse, TBody = unknown>(
@@ -21,6 +22,7 @@ export function useApiFetch<TResponse, TBody = unknown>(
     baseURL: "/api",
     method: (options.method?.toLowerCase() as any) ?? "get",
     body: options.body as any,
+    key: options.key,
     headers: {
       ...(options.headers || {}),
       ...(user.token ? { Authorization: `Bearer ${user.token}` } : {}),

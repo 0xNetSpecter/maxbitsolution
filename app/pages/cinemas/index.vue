@@ -1,27 +1,37 @@
 <script setup lang="ts">
-import { useFetch } from "#app";
+import { useCinemasStore } from "@/stores/cinemas";
 
-const { data: cinemas, pending, error } = await useFetch("/api/cinemas");
+const store = useCinemasStore();
+
+await store.fetchAll();
 </script>
 
 <template>
   <section class="max-w-7xl mx-auto p-6">
-    <h1 class="text-3xl font-bold mb-6">Кинотеатры</h1>
+    <h1 class="text-3xl font-bold mb-6 text-gray-200">🎭 Кинотеатры</h1>
 
-    <div v-if="pending" class="text-gray-400">Загрузка...</div>
-    <div v-else-if="error" class="text-red-400">
-      Ошибка: {{ error.message }}
+    <div v-if="!store.list.length" class="text-gray-400 text-center">
+      Кинотеатров пока нет 😢
     </div>
 
-    <ul v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <ul v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       <li
-        v-for="cinema in cinemas"
+        v-for="cinema in store.list"
         :key="cinema.id"
-        class="bg-gray-800 p-4 rounded-xl shadow hover:shadow-lg transition"
+        class="bg-neutral-900 border border-neutral-700 p-5 rounded-2xl shadow-lg hover:-translate-y-1 hover:shadow-blue-500/20 transition"
       >
-        <h2 class="text-xl font-semibold text-white">{{ cinema.name }}</h2>
-        <p class="text-gray-400">{{ cinema.address }}</p>
-        <p class="text-gray-400 text-sm">{{ cinema.phone }}</p>
+        <h2 class="text-xl font-semibold text-white mb-2">
+          {{ cinema.name }}
+        </h2>
+        <p class="text-gray-400 mb-1">{{ cinema.address }}</p>
+        <p class="text-gray-500 text-sm mb-4">{{ cinema.phone }}</p>
+
+        <NuxtLink
+          :to="`/cinemas/${cinema.id}`"
+          class="block text-center border border-blue-500 text-blue-400 rounded-lg py-2 mt-auto hover:bg-blue-500 hover:text-white transition"
+        >
+          Просмотреть сеансы
+        </NuxtLink>
       </li>
     </ul>
   </section>

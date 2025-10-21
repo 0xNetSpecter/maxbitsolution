@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
-import { useRuntimeConfig } from "#imports";
+import { AuthApi } from "@/api/auth";
+import type { LoginRequest, RegisterRequest } from "@/types/auth";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
@@ -15,43 +16,56 @@ export const useUserStore = defineStore("user", {
   actions: {
     async login(username: string, password: string) {
       try {
-        const config = useRuntimeConfig();
-        const res = await $fetch<{ token: string }>(
-          `${config.public.apiBase}/login`,
-          {
-            method: "POST",
-            body: { username, password },
-          }
-        );
+        const { data, error } = await AuthApi.login({ username, password });
 
-        this.token = res.token;
+        if (error.value) {
+          const message =
+            error.value.data?.message ||
+            "Неверный логин или пароль. Проверьте введенные данные и попробуйте снова.";
+          return { success: false, message };
+        }
+
+        const token = data.value?.token;
+        if (!token) throw new Error("Token not received");
+
+        this.token = token;
         this.username = username;
         this.isLoaded = true;
 
-        localStorage.setItem("auth_token", res.token);
+        localStorage.setItem("auth_token", token);
+        localStorage.setItem("auth_username", username);
+
         return { success: true };
       } catch (err: any) {
         console.error("[Login Error]", err);
         return {
           success: false,
-          message: err?.data?.message || "Ошибка входа",
+          message: "Ошибка входа. Попробуйте позже.",
         };
       }
     },
 
     async register(username: string, password: string) {
       try {
-        const config = useRuntimeConfig();
-        await $fetch(`${config.public.apiBase}/register`, {
-          method: "POST",
-          body: { username, password },
-        });
-        return { success: true };
+        const payload: RegisterRequest = {
+          username,
+          password,
+        };
+
+        const { error } = await AuthApi.register(payload);
+
+        if (error.value) {
+          const msg = error.value.data?.message || "Ошибка регистрации";
+          return { success: false, message: msg };
+        }
+
+        const loginRes = await this.login(username, password);
+        return loginRes;
       } catch (err: any) {
         console.error("[Register Error]", err);
         return {
           success: false,
-          message: err?.data?.message || "Ошибка регистрации",
+          message: "Ошибка регистрации. Попробуйте позже.",
         };
       }
     },
@@ -61,14 +75,25 @@ export const useUserStore = defineStore("user", {
       this.username = "";
       this.isLoaded = false;
       localStorage.removeItem("auth_token");
+      localStorage.removeItem("auth_username");
     },
 
     restoreSession() {
-      const saved = localStorage.getItem("auth_token");
-      if (saved) {
-        this.token = saved;
+      const savedToken = localStorage.getItem("auth_token");
+      const savedUsername = localStorage.getItem("auth_username");
+
+      if (savedToken) {
+        this.token = savedToken;
+        this.username = savedUsername || "";
+        this.isLoaded = true;
+      } else {
         this.isLoaded = true;
       }
+    },
+
+    setToken(token: string) {
+      this.token = token;
+      localStorage.setItem("auth_token", token);
     },
   },
 });

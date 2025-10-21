@@ -7,7 +7,7 @@ const { data: movies, status, error } = await MoviesApi.getAll();
 
 <template>
   <section class="max-w-7xl mx-auto p-6">
-    <h1 class="text-3xl font-bold mb-6">Фильмы</h1>
+    <h1 class="text-3xl font-bold mb-6 text-gray-600">Фильмы</h1>
 
     <div v-if="status === 'pending'" class="text-gray-400">
       Загрузка фильмов…

@@ -1,15 +1,14 @@
 <template>
   <div
-    class="group shadow-xl relative bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition cursor-pointer"
+    class="group bg-gray-800 rounded-2xl overflow-hidden hover:shadow-lg transition cursor-pointer"
   >
     <div class="overflow-hidden relative">
       <img
         :src="fullPoster"
         :alt="movie.title"
-        class="w-full h-80 object-cover transition-transform duration-300 ease-out scale-101 group-hover:scale-105"
+        class="w-full h-80 object-cover transition-transform duration-300 ease-out group-hover:scale-105"
         loading="lazy"
       />
-
       <div
         class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
       ></div>
@@ -27,14 +26,29 @@
       <p class="text-gray-300 text-sm line-clamp-3">
         {{ movie.description }}
       </p>
+
+      <UButton
+        :to="`/movies/${movie.id}`"
+        class="mt-3"
+        color="primary"
+        size="sm"
+        block
+        @click="handleClick"
+      >
+        Просмотреть сеансы
+      </UButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useMoviesStore } from "@/stores/movies";
+
 const {
   public: { imageBase },
 } = useRuntimeConfig();
+
+const store = useMoviesStore();
 
 const props = defineProps<{
   movie: {
@@ -51,8 +65,10 @@ const props = defineProps<{
 const fullPoster = computed(() => {
   const base = imageBase.replace(/\/$/, "");
   const path = props.movie.posterImage.replace(/^\//, "");
-  return props.movie.posterImage.startsWith("http")
-    ? props.movie.posterImage
-    : `${base}/${path}`;
+  return `${base}/${path}`;
 });
+
+function handleClick() {
+  store.setLast(props.movie);
+}
 </script>
