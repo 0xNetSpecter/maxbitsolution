@@ -8,37 +8,29 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-10-21",
 
   ssr: env.NUXT_SSR_ENABLED === "true",
-
   devtools: { enabled: env.NUXT_DEVTOOLS_ENABLED === "true" },
 
   routeRules: ROUTE_RULES,
 
   css: ["~/assets/css/main.css"],
 
+  typescript: { strict: true },
+
   modules: ["@nuxt/eslint", "@nuxt/ui", "@pinia/nuxt"],
 
   runtimeConfig: {
-    apiBase: env.NUXT_API_INTERNAL_BASE || "http://localhost:3022",
+    apiBase: env.PRIVATE_API_BASE || "",
     public: {
-      apiBase: env.NUXT_PUBLIC_API_BASE || "/api",
-      imageBase:
-        env.NUXT_PUBLIC_IMAGE_BASE ||
-        "http://localhost:3022/static/images/posters",
+      apiBase: env.PUBLIC_API_BASE || "/api",
+      imageBase: env.NUXT_PUBLIC_IMAGE_BASE || "",
     },
   },
 
-  pinia: {
-    storesDirs: ["./stores/**"],
-  },
-
-  build: {
-    transpile: ["@headlessui/vue"],
-  },
-
   nitro: {
+    preset: env.NITRO_PRESET || undefined,
     devProxy: {
       "/api": {
-        target: "http://localhost:3022",
+        target: env.DEV_API_TARGET || "http://localhost:3022",
         changeOrigin: true,
       },
     },

@@ -1,25 +1,33 @@
 import { defineStore } from "pinia";
-import { CinemasApi } from "@/api/cinemas";
+import { CinemasService } from "@/services/cinemas.service";
 import type { Cinema } from "@/types/cinemas";
 
 export const useCinemasStore = defineStore("cinemas", {
   state: () => ({
     list: [] as Cinema[],
-    isLoaded: false,
+    loading: false as boolean,
+    error: null as string | null,
   }),
 
-  actions: {
-    async fetchAll() {
-      if (this.isLoaded) return;
-      const { data, error } = await CinemasApi.getAll();
-      if (!error.value && data.value) {
-        this.list = data.value;
-        this.isLoaded = true;
-      }
+  getters: {
+    getNameById: (state) => (id: number) => {
+      const cinema = state.list.find((c) => c.id === id);
+      return cinema?.name || "Неизвестный кинотеатр";
     },
+  },
 
-    getNameById(id: number) {
-      return this.list.find((c) => c.id === id)?.name || `Кинотеатр #${id}`;
+  actions: {
+    async fetchAll(force = false) {
+      if (this.list.length && !force) return;
+      this.loading = true;
+      this.error = null;
+      try {
+        this.list = await CinemasService.getAll();
+      } catch (e: any) {
+        this.error = e.message || "Ошибка загрузки кинотеатров";
+      } finally {
+        this.loading = false;
+      }
     },
   },
 });

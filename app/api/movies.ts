@@ -2,8 +2,9 @@ import { useApiFetch } from "@/composables/useApiFetch";
 import type { Movie, MovieSession } from "@/types/movies";
 
 export const MoviesApi = {
-  getAll() {
-    return useApiFetch<Movie[]>("/movies", { default: () => [] });
+  async getAll(): Promise<Movie[]> {
+    const { data } = await useApiFetch<Movie[]>("/movies", { immediate: true });
+    return data.value || [];
   },
 
   getById(movieId: number) {

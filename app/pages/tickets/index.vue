@@ -54,19 +54,15 @@ async function payBooking(bookingId: string) {
     const { data, error } = await BookingsApi.pay(bookingId);
 
     if (error.value) {
-      alert(error.value.data?.message || "Ошибка при оплате.");
       return;
     }
 
     const booking = bookings.value.find((b) => b.id === bookingId);
     if (booking) booking.isPaid = true;
 
-    alert(data.value?.message || "Бронирование успешно оплачено");
-
     await loadData(true);
   } catch (err) {
     console.error(err);
-    alert("Ошибка при оплате. Попробуйте снова.");
   }
 }
 
@@ -102,7 +98,7 @@ setInterval(() => {
 
     <template v-else>
       <div v-if="unpaid.length" class="mb-10">
-        <h2 class="text-xl font-semibold mb-2 text-gray-300">Неоплаченные</h2>
+        <h2 class="text-xl font-semibold mb-2 text-gray-600">Неоплаченные</h2>
         <hr class="border-gray-700 mb-4" />
 
         <div
@@ -143,7 +139,7 @@ setInterval(() => {
       </div>
 
       <div v-if="paid.length">
-        <h2 class="text-xl font-semibold mb-2 text-gray-300">Оплаченные</h2>
+        <h2 class="text-xl font-semibold mb-2 text-gray-600">Оплаченные</h2>
         <hr class="border-gray-700 mb-4" />
 
         <div

@@ -1,28 +1,28 @@
 <script setup lang="ts">
-import { useCinemasStore } from "@/stores/cinemas";
+import { useCinemas } from "@/composables/useCinemas";
 
-const store = useCinemasStore();
+const { cinemas, loading, error, fetchCinemas } = useCinemas();
 
-await store.fetchAll();
+await fetchCinemas();
 </script>
 
 <template>
   <section class="max-w-7xl mx-auto p-6">
     <h1 class="text-3xl font-bold mb-6 text-gray-200">🎭 Кинотеатры</h1>
 
-    <div v-if="!store.list.length" class="text-gray-400 text-center">
+    <div v-if="loading" class="text-gray-400 text-center">Загрузка...</div>
+    <div v-else-if="error" class="text-red-400 text-center">{{ error }}</div>
+    <div v-else-if="!cinemas.length" class="text-gray-400 text-center">
       Кинотеатров пока нет 😢
     </div>
 
     <ul v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       <li
-        v-for="cinema in store.list"
+        v-for="cinema in cinemas"
         :key="cinema.id"
         class="bg-neutral-900 border border-neutral-700 p-5 rounded-2xl shadow-lg hover:-translate-y-1 hover:shadow-blue-500/20 transition"
       >
-        <h2 class="text-xl font-semibold text-white mb-2">
-          {{ cinema.name }}
-        </h2>
+        <h2 class="text-xl font-semibold text-white mb-2">{{ cinema.name }}</h2>
         <p class="text-gray-400 mb-1">{{ cinema.address }}</p>
         <p class="text-gray-500 text-sm mb-4">{{ cinema.phone }}</p>
 

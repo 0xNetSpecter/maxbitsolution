@@ -14,5 +14,10 @@ export const useMoviesStore = defineStore("movies", {
     setLast(movie: Movie) {
       this.lastSelected = movie;
     },
+    addMovie(movie: Movie) {
+      if (!this.movies.find((m) => m.id === movie.id)) {
+        this.movies.push(movie);
+      }
+    },
   },
 });

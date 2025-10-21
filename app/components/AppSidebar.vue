@@ -21,7 +21,7 @@
     </nav>
 
     <div class="p-4 border-t border-gray-200 dark:border-gray-700">
-      <UButton color="neutral" @click="handleAuthClick">
+      <UButton color="primary" @click="handleAuthClick">
         {{ isLoggedIn ? "Выйти" : "Войти" }}
       </UButton>
     </div>
