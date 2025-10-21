@@ -21,7 +21,7 @@ export const useUserStore = defineStore("user", {
         if (error.value) {
           const message =
             error.value.data?.message ||
-            "Неверный логин или пароль. Проверьте введенные данные и попробуйте снова.";
+            "Неверный логин или пароль. Проверьте введенные данные и попробуйте снова";
           return { success: false, message };
         }
 
