@@ -1,39 +1,46 @@
 import { ROUTE_RULES } from "./config/routes";
-import { fileURLToPath, URL } from "node:url";
-import tsconfigPaths from "vite-tsconfig-paths";
+import { loadEnv } from "vite";
+
+const mode = process.env.NODE_ENV || "development";
+const env = loadEnv(mode, process.cwd());
 
 export default defineNuxtConfig({
-  compatibilityDate:
-    (process.env.NUXT_COMPATIBILITY_DATE as any) || "2025-07-15",
+  compatibilityDate: "2025-10-21",
 
-  ssr: process.env.NUXT_SSR_ENABLED === "true",
+  ssr: env.NUXT_SSR_ENABLED === "true",
 
-  devtools: { enabled: process.env.NUXT_DEVTOOLS_ENABLED === "true" },
+  devtools: { enabled: env.NUXT_DEVTOOLS_ENABLED === "true" },
 
   routeRules: ROUTE_RULES,
 
-  modules: ["@nuxt/eslint", "@nuxt/ui", "@nuxt/test-utils", "@pinia/nuxt"],
+  css: ["~/assets/css/main.css"],
 
-  vite: {
-    plugins: [tsconfigPaths()],
-  },
-
-  css: [fileURLToPath(new URL("./assets/styles/main.scss", import.meta.url))],
+  modules: ["@nuxt/eslint", "@nuxt/ui", "@pinia/nuxt"],
 
   runtimeConfig: {
+    apiBase: env.NUXT_API_INTERNAL_BASE || "http://localhost:3022",
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || "http://localhost:3022",
+      apiBase: env.NUXT_PUBLIC_API_BASE || "/api",
       imageBase:
-        process.env.NUXT_PUBLIC_IMAGE_BASE ||
+        env.NUXT_PUBLIC_IMAGE_BASE ||
         "http://localhost:3022/static/images/posters",
     },
   },
 
-  imports: {
-    dirs: ["stores"],
+  pinia: {
+    storesDirs: ["./stores/**"],
   },
 
   build: {
     transpile: ["@headlessui/vue"],
+  },
+
+  nitro: {
+    devProxy: {
+      "/api": {
+        target: "http://localhost:3022",
+        changeOrigin: true,
+      },
+    },
   },
 });

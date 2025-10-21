@@ -1,7 +1,7 @@
 {
   "files": [],
   "compilerOptions": {
-    "types": ["node"]
+    "types": ["node", "@pinia/nuxt"]
   },
   "references": [
     {
