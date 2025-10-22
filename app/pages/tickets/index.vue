@@ -63,6 +63,7 @@ async function payBooking(bookingId: string) {
     await loadData(true);
   } catch (err) {
     console.error(err);
+    alert("Error");
   }
 }
 

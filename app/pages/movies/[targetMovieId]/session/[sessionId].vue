@@ -16,6 +16,7 @@ const {
   isSelected,
   toggleSeat,
   bookSelected,
+  error,
 } = await useSessionDetails(sessionId, movieId);
 </script>
 
@@ -66,5 +67,6 @@ const {
         Сбросить выбор
       </button>
     </div>
+    <div class="text-red-400">{{ error }}</div>
   </section>
 </template>

@@ -13,6 +13,8 @@ export const useSessionDetails = async (sessionId: number, movieId: number) => {
   const cinemasStore = useCinemasStore();
   const moviesStore = useMoviesStore();
 
+  const error = ref<string>("");
+
   await cinemasStore.fetchAll();
 
   const { data: session } = await SessionsApi.getDetails(sessionId);
@@ -58,7 +60,8 @@ export const useSessionDetails = async (sessionId: number, movieId: number) => {
       selectedSeats.value = [];
       await router.push("/tickets");
     } catch (e) {
-      console.error("Booking failed", e);
+      console.error("Ошибка при бронировании", e);
+      error.value = "Ошибка при бронировании";
     }
   }
 
@@ -72,8 +75,9 @@ export const useSessionDetails = async (sessionId: number, movieId: number) => {
       const allMovies = await MoviesApi.getAll();
       movieData = allMovies.find((m) => m.id === movieId) || null;
       if (movieData) moviesStore.addMovie(movieData);
-    } catch (err) {
+    } catch (err: string) {
       console.error("Ошибка при загрузке фильмов:", err);
+      error.value = "Ошибка при загрузке фильмов";
     }
   }
 
@@ -91,5 +95,6 @@ export const useSessionDetails = async (sessionId: number, movieId: number) => {
     bookSelected,
     movie,
     cinemaName,
+    error,
   };
 };
