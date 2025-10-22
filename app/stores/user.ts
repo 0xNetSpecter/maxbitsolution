@@ -70,6 +70,19 @@ export const useUserStore = defineStore("user", {
       }
     },
 
+    init() {
+      if (import.meta.client) {
+        console.log(import.meta);
+        const token = localStorage.getItem("auth_token");
+        const username = localStorage.getItem("auth_username");
+
+        if (token && username) {
+          this.token = token;
+          this.username = username;
+        }
+      }
+    },
+
     logout() {
       this.token = null;
       this.username = "";

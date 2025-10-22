@@ -19,8 +19,6 @@ const fullSrc = computed(() => {
 function onError(e: Event) {
   (e.target as HTMLImageElement).src = "/no-poster.jpg";
 }
-
-console.log(props.src);
 </script>
 
 <template>
